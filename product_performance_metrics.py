@@ -209,6 +209,64 @@ def product_performance_metrics():
             for _, row in availability_df.iterrows():
                 st.metric(f"Status: {row['AVAILABILITY_INDICATOR']}", int(
                     row['PRODUCT_COUNT']))
+                
+        # Search input
+        product_search = st.text_input(
+            "Search for a product by name",
+            placeholder="e.g., Samsung, TV, Laptop...",
+            help="Enter product name to check availability status"
+        )
+
+        if product_search:
+            # Query to search products with availability
+            product_availability_query = f"""
+            SELECT
+                p.PRODUCT_TITLE,
+                p.BRAND,
+                a.AVAILABILITY_INDICATOR,
+                p.SKU
+            FROM
+                Products p
+            JOIN
+                Availability a ON p.ITEM_ID = a.ITEM_ID
+            WHERE
+                (LOWER(p.PRODUCT_TITLE) LIKE LOWER('%{product_search}%')
+                OR LOWER(p.BRAND) LIKE LOWER('%{product_search}%'))
+                {brand_filter_condition}
+            ORDER BY
+                a.AVAILABILITY_INDICATOR, p.PRODUCT_TITLE
+            """
+            
+            product_avail_df = run_query(product_availability_query)
+            
+            if product_avail_df is not None and not product_avail_df.empty:
+                st.success(f"Found {len(product_avail_df)} product(s) matching '{product_search}'")
+                
+                # Display results with color coding
+                for _, row in product_avail_df.iterrows():
+                    status = row['AVAILABILITY_INDICATOR']
+                    
+                    # Color code based on availability
+                    if 'IN_STOCK' in status:
+                        st.success(
+                            f"✅ **{row['PRODUCT_TITLE']}**\n\n"
+                            f"Brand: {row['BRAND']} | SKU: {row['SKU']} | Status: **{status}**"
+                        )
+                    elif 'LIMITED_STOCK' in status:
+                        st.warning(
+                            f"⚠️ **{row['PRODUCT_TITLE']}**\n\n"
+                            f"Brand: {row['BRAND']} | SKU: {row['SKU']} | Status: **{status}**"
+                        )
+                    else:
+                        st.error(
+                            f"❌ **{row['PRODUCT_TITLE']}**\n\n"
+                            f"Brand: {row['BRAND']} | SKU: {row['SKU']} | Status: **{status}**"
+                        )
+            else:
+                st.info(f"No products found matching '{product_search}'. Try a different search term.")
+        else:
+            st.info("👆 Enter a product name above to check its availability status")
+
     else:
         st.warning("No data available.")
 
