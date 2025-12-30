@@ -54,7 +54,7 @@ def run_query(query):
 
 def product_performance_metrics():
     # Streamlit UI
-    st.title("📊 Product Performance Metrics")
+    st.title("📦 Product Performance Metrics")
     st.markdown("---")
 
     # Add a brand filter dropdown

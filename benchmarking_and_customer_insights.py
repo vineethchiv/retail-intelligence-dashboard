@@ -55,7 +55,7 @@ def run_query(query):
 
 def benchmarking_and_customer_insights():
     # Streamlit UI
-    st.title("📊 Benchmarking Metrics & Customer Insights")
+    st.title("👨 Benchmarking Metrics & Customer Insights")
     st.markdown("---")
 
     # 3. Benchmarking Metrics
