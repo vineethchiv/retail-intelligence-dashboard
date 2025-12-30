@@ -30,7 +30,6 @@ A comprehensive Streamlit-based retail analytics dashboard powered by Snowflake,
 ### 💬 **Cortex AI Agent**
 - Natural language queries for data insights
 - Predefined suggestion prompts
-- SQL query execution and visualization
 - Interactive chat interface with data-driven responses
 - Automatic chart generation (Line, Bar, Data Table)
 
@@ -146,6 +145,90 @@ The dashboard connects to Snowflake tables including:
 - **Reviews** - Customer reviews and ratings
 - **Customers** - Customer information
 
+```SQL
+CREATE TABLE Products (
+    ITEM_ID INT AUTOINCREMENT PRIMARY KEY,
+    ITEM_NAME VARCHAR(255),
+    PRODUCT_TITLE VARCHAR(255),
+    MODEL VARCHAR(100),
+    SKU VARCHAR(100),
+    TAXONOMY VARCHAR(255),
+    WEIGHTS_AND_DIMENSIONS VARCHAR(100),
+    BRAND VARCHAR(100),
+    COMPANY_NAME VARCHAR(255)
+);
+
+CREATE TABLE Availability (
+    ITEM_ID INT,
+    AVAILABILITY_INDICATOR VARCHAR(50),
+    PRIMARY KEY (ITEM_ID),
+    FOREIGN KEY (ITEM_ID) REFERENCES Products(ITEM_ID)
+);
+
+CREATE TABLE Benchmark (
+    BENCHMARK_ID INT AUTOINCREMENT PRIMARY KEY,
+    BENCHMARK_BRAND_NAME VARCHAR(255),
+    BENCHMARK_CATG VARCHAR(100),
+    BENCHMARK_CATG_ID VARCHAR(50),
+    BENCHMARK_COLOR_DESC VARCHAR(50),
+    BENCHMARK_DEPT VARCHAR(255),
+    BENCHMARK_ITEM_ATTRIBS VARCHAR(500),
+    BENCHMARK_ITEM_MDL_NUM VARCHAR(100),
+    BENCHMARK_ITEM_SUB_DESC VARCHAR(255),
+    BENCHMARK_STORE VARCHAR(255),
+    BENCHMARK_SUBCATG VARCHAR(100),
+    BENCHMARK_UPC_NUM VARCHAR(100)
+);
+
+CREATE TABLE Pricing (
+    ITEM_ID INT,
+    PRODUCT_PRICE FLOAT,
+    PRICE_SCRAPE_DATE DATE,
+    BENCHMARK_ID INT,
+    BENCHMARK_BASE_PRICE FLOAT,
+    BENCHMARK_SITE_PRICE FLOAT,
+    PRIMARY KEY (ITEM_ID, BENCHMARK_ID),
+    FOREIGN KEY (ITEM_ID) REFERENCES Products(ITEM_ID),
+    FOREIGN KEY (BENCHMARK_ID) REFERENCES Benchmark(BENCHMARK_ID)
+);
+
+CREATE TABLE Reviews (
+    ITEM_ID INT,
+    ITEM_REVIEW_COUNT INT,
+    ITEM_REVIEW_RATING FLOAT,
+    PRIMARY KEY (ITEM_ID),
+    FOREIGN KEY (ITEM_ID) REFERENCES Products(ITEM_ID)
+);
+
+CREATE TABLE Third_Party_Merchants (
+    MERCHANT_ID INT AUTOINCREMENT PRIMARY KEY,
+    THIRD_PARTY_MERCHANT_NAME VARCHAR(255)
+);
+
+CREATE TABLE Product_Merchant_Mapping (
+    ITEM_ID INT,
+    MERCHANT_ID INT,
+    PRIMARY KEY (ITEM_ID, MERCHANT_ID),
+    FOREIGN KEY (ITEM_ID) REFERENCES Products(ITEM_ID),
+    FOREIGN KEY (MERCHANT_ID) REFERENCES Third_Party_Merchants(MERCHANT_ID)
+);
+
+CREATE TABLE Sales (
+SALE_ID INT AUTOINCREMENT PRIMARY KEY,
+    ITEM_ID INT,
+    MERCHANT_ID INT,
+    SALE_DATE DATE,
+    QUANTITY_SOLD INT,
+    SALE_PRICE FLOAT,
+    TOTAL_SALE_AMOUNT FLOAT,
+    DISCOUNT_APPLIED FLOAT,
+    CUSTOMER_ID INT,
+    PAYMENT_METHOD VARCHAR(50),
+    FOREIGN KEY (ITEM_ID) REFERENCES Products(ITEM_ID),
+    FOREIGN KEY (MERCHANT_ID) REFERENCES Third_Party_Merchants(MERCHANT_ID)
+);
+```
+
 ## Features & Capabilities
 
 ### Real-time Caching
@@ -205,7 +288,6 @@ The dashboard connects to Snowflake tables including:
 
 ## Future Enhancements
 
-- [ ] Export data to CSV/PDF reports
 - [ ] Advanced anomaly detection
 - [ ] Predictive analytics capabilities
 - [ ] Real-time alerts and notifications
@@ -218,4 +300,4 @@ For issues or questions, please open an issue in the repository or contact the d
 
 ---
 
-**Last Updated**: December 29, 2025
+**Last Updated**: December 30, 2025
