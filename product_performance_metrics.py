@@ -243,25 +243,28 @@ def product_performance_metrics():
                 st.success(f"Found {len(product_avail_df)} product(s) matching '{product_search}'")
                 
                 # Display results with color coding
-                for _, row in product_avail_df.iterrows():
-                    status = row['AVAILABILITY_INDICATOR']
-                    
-                    # Color code based on availability
-                    if 'IN_STOCK' in status:
-                        st.success(
-                            f"✅ **{row['PRODUCT_TITLE']}**\n\n"
-                            f"Brand: {row['BRAND']} | SKU: {row['SKU']} | Status: **{status}**"
-                        )
-                    elif 'LIMITED_STOCK' in status:
-                        st.warning(
-                            f"⚠️ **{row['PRODUCT_TITLE']}**\n\n"
-                            f"Brand: {row['BRAND']} | SKU: {row['SKU']} | Status: **{status}**"
-                        )
-                    else:
-                        st.error(
-                            f"❌ **{row['PRODUCT_TITLE']}**\n\n"
-                            f"Brand: {row['BRAND']} | SKU: {row['SKU']} | Status: **{status}**"
-                        )
+                if len(product_avail_df) > 3:
+                    st.warning("Too many results to display. Please refine your search.")
+                else:
+                    for _, row in product_avail_df.iterrows():
+                        status = row['AVAILABILITY_INDICATOR']
+                        
+                        # Color code based on availability
+                        if 'IN_STOCK' in status:
+                            st.success(
+                                f"✅ **{row['PRODUCT_TITLE']}**\n\n"
+                                f"Brand: {row['BRAND']} | SKU: {row['SKU']} | Status: **{status}**"
+                            )
+                        elif 'LIMITED_STOCK' in status:
+                            st.warning(
+                                f"⚠️ **{row['PRODUCT_TITLE']}**\n\n"
+                                f"Brand: {row['BRAND']} | SKU: {row['SKU']} | Status: **{status}**"
+                            )
+                        else:
+                            st.error(
+                                f"❌ **{row['PRODUCT_TITLE']}**\n\n"
+                                f"Brand: {row['BRAND']} | SKU: {row['SKU']} | Status: **{status}**"
+                            )
             else:
                 st.info(f"No products found matching '{product_search}'. Try a different search term.")
         else:
